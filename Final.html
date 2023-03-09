@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 90%;
+    }
+    
+    td, th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #aafabb;
+    }
+    tr:nth-child(odd) {
+      background-color: #fcbabd;
+    }
+    
+    button {
+      background-color: black;
+      color: white;
+      
+    }
+    button:hover{
+      background-color: red;
+    }
+    th{
+        background-color: black;
+        color: white;
+    }
+    .editBtn{
+        margin:2px;
+        background-color: rgb(0, 0, 0);
+        color: rgb(255, 255, 255);
+    }
+    .col1{
+            border: 1px soild black;
+            text-align: center;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        table,th{
+            background-color: blueviolet;
+        }
+        #tbl{
+            background-color: blueviolet;
+            color: #000000;
+            width: 70%;
+        }
+      </style>   
+</head>
+<body>
+    <h2>Store Management System</h2>
+    <button onclick="showproducts()" >Prouducts</button>
+    <button onclick="EnterOrder()" id="toggle-table-button">Enter the order</button>
+    <button onclick="createOrderDetails()">All Orders</button>
+
+    <div id="products"></div>
+    
+    <script>
+const d1 = [];
+        const products =[
+				{"prodcode":"PEP122","prodname":"Pepsi","price":12,"category":"Food","offer":"10%"},
+				{"prodcode":"COK238","prodname":"Coke","price":15,"category":"Food","offer":"15%"},
+				{"prodcode":"MIR411","prodname":"Mirinda","price":30,"category":"Food","offer":"20%"},
+				{"prodcode":"RB0277","prodname":"RedBull","price":80,"category":"Food","offer":"None"},
+				{"prodcode":"LUX831","prodname":"Lux","price":10,"category":"Soap","offer":"15%"},
+				{"prodcode":"DOV672","prodname":"Dove","price":25,"category":"Soap","offer":"20%"},
+				{"prodcode":"DET810","prodname":"Dettol","price":15,"category":"Soap","offer":"None"},
+				{"prodcode":"PAN590","prodname":"Pantene","price":60,"category":"Shampoo","offer":"None"},
+				{"prodcode":"SUN677","prodname":"Sunsilk","price":48,"category":"Shampoo","offer":"15%"},
+				{"prodcode":"GAR004","prodname":"Garnier","price":75,"category":"Shampoo","offer":"10%"}
+];
+
+const delivery = ['Before	10AM','10AM-12PM','12PM-2PM','2PM-4PM','4PM-6PM','After	6PM'];
+const loca = ['Sector	14A', 'Sector	15B','Sector	22', 'Pioneer	Chowk'];
+const prodcode = ['PEP122','COK238','MIR411','RB0277','LUX831','DOV672','DET810','PAN590','SUN677','GAR004'];
+const quant = [1,2,3,4,5,6];
+const price = [12,15,30,80,10,25,12,60,48,75];
+const discount = [(10/100),0.15,0.2,'None',0.15,0.2,'None','None',0.15,0.1];
+const prodname = ['Pepsi','Coke','Mirinda','RedBull','Lux','Dove','Dettol','Pantene', 'Sunsilk','Garnier'];
+
+const details1 = [
+    {"prodcode":"PEP122",prodname:'Pepsi',price:12,discount:0.1},
+    {"prodcode":"COK238",prodname:'Coke',price:15,discount:0.15},
+    {"prodcode":"MIR411",prodname:'Mirinda',price:30,discount:0.5},
+    {"prodcode":"RB0277",prodname:'RedBull',price:80,discount:'None'},
+    {"prodcode":"LUX831",prodname:'Lux',price:10,discount:0.15},
+    {"prodcode":"DOV672",prodname:'Dove',price:25,discount:0.2},
+    {"prodcode":"DET810",prodname:'Dettol',price:15,discount:'None'},
+    {"prodcode":"PAN590",prodname:'Pantene',price:60,discount:'None'},
+    {"prodcode":"SUN677",prodname:'Sunsilk',price:48,discount:0.15},
+    {"prodcode":"GAR004",prodname:'Garnier',price:75,discount:0.1}
+];
+
+
+/*
+const Alorder = [
+{"CustomerName":"Jack	Smith","MobileNumber":"425361434","Location":"Sector	14","Deliveryslot":"12PM-2PM","value":72.6,"quantity":6,"items":[{"prodcode":"PEP122","productname":"Pepsi","price":12,"quantity":2,"discount":"10%","netamount":21.6},{"prodcode":"COK238","productname":"coke","price":15,"quantity":4,"discount":"15%","netamount":51}]},
+{"CustomerName":"Mary	Gomes","MobileNumber":"723476123","Location":"Sector	22","Deliveryslot":"4PM-6PM","value":130.60,"quantity":7,"items":[{"prodcode":"SUN677","productname":"sunsilk","price":48,"quantity":2,"discount":"15%","netamount":81.6},{"prodcode":"LUX831","productname":"lux","price":10,"quantity":4,"discount":"15%","netamount":34},{"prodcode":"DET810","productname":"dettol","price":15,"quantity":1,"discount":"None%","netamount":15}]},
+{"CustomerName":"Tim	May","MobileNumber":"835099614","Location":"Pioneer	Chowk","Deliveryslot":"Before	10AM","value":705,"quantity":9,"items":[{"prodcode":"GAR004","productname":"garnier","price":75,"quantity":6,"discount":"10%","netamount":405},{"prodcode":"RB0277","productname":"redbull","price":80,"quantity":3,"discount":"None","netamount":240}]}];
+
+function createOrderDetails() {
+  let details = "";
+ 
+  Alorder.forEach(order => {
+    
+    const { CustomerName, MobileNumber, Location, Deliveryslot, items, quantity } = order;
+    let value = 0;
+    items.forEach(item => {
+      value += item.netamount;
+    });
+    order.value = value;
+    details += `<p>Customer Name: ${CustomerName} , Mobile: ${MobileNumber} , Location: ${Location} , Delivery slot: ${Deliveryslot} , Order Value: ${value}, Number of items : ${quantity}</p>`;
+    details += `<table><thead><tr><th>Product Code</th><th>Product name</th><th>Price</th><th>Quantity</th><th>Discount</th><th>Net Amount</th></tr></thead><tbody>`;
+    items.forEach(item => {
+      details += `<tr><td>${item.prodcode}</td><td>${item.productname}</td><td>${item.price}</td><td>${item.quantity}</td><td>${item.discount}</td><td>${item.netamount}</td></tr>`;
+    });
+
+    details += `</tbody></table>`;
+    
+  });
+  let div = document.getElementById('products');
+    div.innerHTML = details;
+   
+}*/
+const Allorder = [
+  {"custname":"Jack Smith","mobile":"425361434","location":"Sector 14","slot":"12PM-2PM","value":72.6,"items":[{"prodcode":"PEP122","quantity":2},{"prodcode":"COK238","quantity":4}]},
+  {"custname":"Mary Gomes","mobile":"723476123","location":"Sector 22","slot":"4PM-6PM","value":130.60,"items":[{"prodcode":"SUN677","quantity":2},{"prodcode":"LUX831","quantity":4},{"prodcode":"DET810","quantity":1}]},
+  {"custname":"Tim May","mobile":"835099614","location":"Pioneer Chowk","slot":"Before 10AM","value":705,"items":[{"prodcode":"GAR004","quantity":6},{"prodcode":"RB0277","quantity":3},{"prodcode":"MIR411","quantity":2}]}
+];
+
+function createOrderDetails() {
+  let details = "";
+
+  Allorder.forEach(order => {
+    const { custname, mobile, location, slot, items } = order;
+    let value = 0;
+    let itemDetails = '';
+
+    items.forEach(item => {
+      const product = details1.find(p => p.prodcode === item.prodcode);
+      const netamount = product.discount === 'None' ? item.quantity * product.price : item.quantity * product.price * (1 - product.discount);
+      value += netamount;
+      itemDetails += `<tr><td>${item.prodcode}</td><td>${product.prodname}</td><td>${product.price}</td><td>${item.quantity}</td><td>${product.discount === 'None' ? 'None' : (product.discount * 100 + '%')}</td><td>${netamount}</td></tr>`;
+    });
+
+    order.value = value;
+    details += `<p>Customer Name: ${custname} , Mobile: ${mobile} , Location: ${location} , Delivery slot: ${slot} , Order Value: ${value}, Number of items : ${items.length}</p>`;
+    details += `<table><thead><tr><th>Product Code</th><th>Product Name</th><th>Price</th><th>Quantity</th><th>Discount</th><th>Net Amount</th></tr></thead><tbody>${itemDetails}</tbody></table>`;
+  });
+
+  let div = document.getElementById('products');
+  div.innerHTML = details;
+}
+
+/*const ArrayOrder=[
+{"custname":"Jack	Smith","mobile":"425361434","location":"Sector	14","slot":"12PM-2PM","value":72.6,"items":[{"prodcode":"PEP122","quantity":2},{"prodcode":"COK238","quantity":4}]},
+{"custname":"Mary	Gomes","mobile":"723476123","location":"Sector	22","slot":"4PM-6PM","value":130.60,"items":[{"prodcode":"SUN677","quantity":2},{"prodcode":"LUX831","quantity":4},{"prodcode":"DET810","quantity":1}]},
+{"custname":"Tim	May","mobile":"835099614","location":"Pioneer	Chowk","slot":"Before	10AM","value":705,"items":[{"prodcode":"GAR004","quantity":6},{"prodcode":"RB0277","quantity":3},{"prodcode":"MIR411","quantity":2}]}
+]*/
+
+
+function showproducts(){
+    const arr1 = products.map(function(ele){
+        let str = '<tr>';
+        str+='<td>'+ele.prodcode+'</td>'; 
+        str+='<td>'+ele.prodname+'</td>'; 
+        str+='<td>'+ele.price+'</td>'; 
+        str+='<td>'+ele.category+'</td>'; 
+        str+='<td>'+ele.offer+'</td>'; 
+        str+= '</tr>';
+        return str;
+    });
+    let header = '<tr>';
+        header+='<th onclick=\'sort(0)\'>prodcode</th>';
+        header+='<th onclick=\'sort(1)\'>prodname</th>';
+        header+='<th onclick=\'sort(2)\'>price</th>';
+        header+='<th onclick=\'sort(3)\'>category</th>';
+        header+='<th onclick=\'sort(4)\'>offer</th>';
+        header+='</tr>';
+        let html = '<table>'+header+arr1.join('')+'</table>';
+        console.log(html);
+        let element = document.getElementById('products');
+        element.innerHTML = html;
+
+}
+function showHideTable() {
+    let table = document.querySelector("table");
+    if(table!=null){
+    if (table.style.display == "none") {
+            table.style.display = "block";
+    } else {
+table.style.display = "none";
+table.remove();
+}
+}
+}
+let toggleButton = document.getElementById("toggle-table-button");
+toggleButton.addEventListener("click", showHideTable);
+function addpro(){
+let st = {};
+st.prodcode = document.getElementById('prodcode').value;
+st.prodname = document.getElementById('prodname').value;
+st.price = document.getElementById('price').value;
+st.quant = document.getElementById('category').value;
+st.offer = document.getElementById('offer').value;
+products.push(st);
+showproducts();
+}
+function sort(colno){
+    if(colno==0)
+        products.sort(sortprodcode);
+    else if(colno==1)
+        products.sort(sortprodname);
+    else if(colno==2)
+        products.sort(sortprice);
+    else if(colno==3)
+        products.sort(sortcategory);
+    else
+        products.sort(sortoffer);
+    showproducts();
+}
+function sortprodcode(st1,st2)
+{
+    return st1.prodcode.localeCompare(st2.prodcode);
+}
+function sortprodname(st1,st2)
+{
+    return st1.prodname.localeCompare(st2.prodname);
+}
+function sortprice(st1,st2)
+{
+    return st1.price - st2.price;
+}
+function sortcategory(st1,st2)
+{
+    return st1.category.localeCompare(st2.category);
+}
+function sortoffer(st1,st2)
+{
+    return st1.offer - st2.offer;
+}
+function EnterOrder(){
+    let str='CustomerName:<input type="text" id="name"><br/>';
+    str+='MobileNumber:<input type="number" id="number"><br/>';
+    str+='Location:'+makeCode('Loc',loca,'Select Location','')+'<br/>';
+    str+='Deliveryslot :'+makeCode('Del',delivery,'Select Delivery slot','')+'<br/>';
+    str+='Product' +makeCode('code1',prodcode,'Select Product','');
+    str+='Quantity'+ makeCode('code2',quant,'Select quantity','')+'<br>';
+    str+= '<button onclick=\'addToOrder()\'>Add to order</button><br/>';
+    str+= '<button onclick=\'addprod()\'>Order Complete</button>';
+    str+= '<button onclick=\'clearInputs()\'>Cancel Order</button><br/>';
+   
+    
+    let div = document.getElementById('products');
+    div.innerHTML = str;
+}
+/*function createOrder() {
+    
+    let details = "";
+  Alorder.forEach(order => {
+    const { CustomerName, MobileNumber, Location, Deliveryslot, value, items,Quantity } = order;
+    details += `<p>Customer Name: ${CustomerName} , Mobile: ${MobileNumber} , Location: ${Location} , Delivery slot: ${Deliveryslot} , Order Value: ${value}, Number of items : ${Quantity}</p>`;
+    details += `<table><thead><tr><th>Product Code</th><th>Product name</th><th>Price</th><th>Quantity</th><th>Discount</th><th>Net Amount</th></tr></thead><tbody>`;
+    items.forEach(item => {
+      details += `<tr><td>${item.prodcode}</td><td>${item.productname}</td><td>${item.price}</td><td>${item.Quantity}</td><td>${item.discount}</td><td>${item.netamount}</td></tr>`;
+    });
+    
+    details += `</tbody></table><br>`;
+    //document.body.innerHTML += details;
+    
+  });
+  let div = document.getElementById('products');
+    div.innerHTML = details;
+   
+}*/
+function clearInputs(){
+    document.getElementById('name').value = '';
+    document.getElementById('number').value = '';
+    document.getElementById('Loc').value = '';
+    document.getElementById('Del').value = '';
+    document.getElementById('code1').value = '';
+    document.getElementById('code2').value = '';
+    let table = document.querySelector("table");
+    if(table){
+        table.remove();
+    }
+}
+
+
+
+function addprod() {
+  let st = {};
+  st.custname = document.getElementById('name').value;
+  st.mobile = document.getElementById('number').value;
+  st.location = document.getElementById('Loc').value;
+  st.slot = document.getElementById('Del').value;
+  st.items = [];
+
+  let item = {};
+  item.prodcode = document.getElementById('code1').value;
+  item.quantity = document.getElementById('code2').value;
+  st.items.push(item);
+
+  if (!st.custname) {
+    alert("Please enter a Customer Name");
+    return;
+  } else if (st.custname.length < 5) {
+    alert("Please write more than 5 characters");
+    return;
+  }
+
+  if (!st.mobile) {
+    alert("Please enter a Mobile number");
+    return;
+  } else if (st.mobile.length < 10 || st.mobile.length > 10) {
+    alert("Please enter 10 digit mobile number");
+    return;
+  }
+
+  if (st.location == 'Select Location') {
+    alert("Choose a location");
+    return;
+  }
+
+  if (st.slot == 'Select Delivery slot') {
+    alert("Choose a delivery slot");
+    return;
+  }
+
+  if (item.prodcode == 'Select Product') {
+    alert("Choose a product");
+    return;
+  }
+
+  if (item.quantity == 'Select quantity') {
+    alert("Choose a quantity");
+    return;
+  }
+
+  Allorder.push(st);
+
+  alert("New Details has been updated");
+
+  createOrderDetails();
+}
+
+/*function displayArray() {
+  let output = "";
+  for (let i = 0; i < Allorder.length; i++) {
+    output += "Customer Name: " + Allorder[i].CustomerName + "\n";
+    output += "Mobile Number: " + Allorder[i].MobileNumber + "\n";
+    output += "Location: " + Allorder[i].Location + "\n";
+    output += "Delivery Slot: " + Allorder[i].Deliveryslot + "\n";
+    output += "Product: " + Allorder[i].Product + "\n";
+    output += "Quantity: " + Allorder[i].Quantity + "\n";
+    output += "\n";
+  }
+  console.log(output);
+}*/
+
+   
+function addToOrder() {
+  let table;
+  if (!document.querySelector("table")) {
+    table = document.createElement('table');
+    table.style.border = 'none';
+    table.style.backgroundColor = 'green';
+
+    let headerRow = table.insertRow(-1);
+    let headerCells = ['Prodcode', 'Product Name', 'Price', 'Quantity', 'Discount', 'Net Amount', 'Remove'];
+    for (let i = 0; i < headerCells.length; i++) {
+      let th = document.createElement('th');
+      th.textContent = headerCells[i];
+      headerRow.appendChild(th);
+    }
+
+    document.body.appendChild(table);
+  }
+  else{
+      table = document.querySelector("table");
+  }
+
+    let prodCode = document.getElementById('code1').value;
+    let quant = document.getElementById('code2').value;
+    let price = 0;
+    let prodName = '';
+    let discount = '';
+    let netAmount = '';
+
+    switch(prodCode){
+        case 'PEP122': 
+            price = 12;
+            prodName = 'Pepsi';
+            discount= '10%';
+            let a1 = (price*quant);
+            let a2 = a1*0.1;
+            netAmount = a1-a2;
+            break;
+        case 'COK238': 
+            price = 15;
+            prodName = 'Coke';
+            discount= '15%';
+            let b1 = (price*quant);
+            let b2 = b1*0.15;
+            netAmount = b1-b2;
+            break;
+        case 'MIR411': 
+            price = 30;
+            prodName = 'Mirinda';
+            discount= '20%';
+            let c1 = (price*quant);
+            let c2 = c1*0.2;
+            netAmount = c1-c2;
+            break;
+        case 'RB0277': 
+            price = 80;
+            prodName = 'Red Bull';
+            discount= 'None';
+            let d1 = (price*quant);
+            netAmount = d1;
+            break;
+        case 'LUX831': 
+            price = 10;
+            prodName = 'Lux';
+            discount= '15%';
+            let e1 = (price*quant);
+            let e2 = e1*0.15;
+            netAmount = e1-e2;
+            break;
+        case 'DOV672': 
+            price = 25;
+            prodName = 'Dove';
+            discount= '20%';
+            let f1 = (price*quant);
+            let f2 = f1*0.2;
+            netAmount = f1-f2;
+            break;
+        case 'DET810': 
+            price = 15;
+            prodName = 'Dettol';
+            discount= 'None';
+            let g1 = (price*quant);
+            netAmount = g1;
+            break;
+           
+        case 'PAN590': 
+            price = 60;
+            prodName = 'Pantene';
+            discount= 'None';
+            let h1 = (price*quant);
+            netAmount = h1;
+            break;
+        case 'SUN677': 
+            price = 48;
+            prodName = 'Sunsilk';
+            discount= '15%';
+            let i1 = (price*quant);
+            let i2 = i1*0.15;
+            netAmount = i1-i2;
+            break;
+        case 'GAR004': 
+            price = 75;
+            prodName = 'Garnier';
+            discount= '10%';
+            let j1 = (price*quant);
+            let j2 = j1*0.1;
+            netAmount = j1-j2;
+            break;
+    }
+    
+
+    let existingProduct = false;
+  for (let i = 1; i < table.rows.length; i++) {
+      let row = table.rows[i];
+      if (row.cells[0].innerHTML === prodCode) {
+          existingProduct = true;
+          let prevQuant = parseInt(row.cells[3].innerHTML);
+          quant = parseInt(quant) + prevQuant;
+          row.cells[3].innerHTML = quant;
+          netAmount = price * quant;
+          row.cells[5].innerHTML = netAmount;
+          break;
+      }
+  }
+  if (!existingProduct) {
+      let dataRow = table.insertRow(1);
+      dataRow.insertCell(0).innerHTML = prodCode;
+      dataRow.insertCell(1).innerHTML = prodName;
+      dataRow.insertCell(2).innerHTML = price;
+      dataRow.insertCell(3).innerHTML = quant;
+      dataRow.insertCell(4).innerHTML = discount;
+      dataRow.insertCell(5).innerHTML = netAmount;
+
+      let removeButton = document.createElement('button');
+      removeButton.innerHTML = 'Remove';
+      removeButton.onclick = function(){
+          dataRow.remove();
+      }
+
+      let removeCell = dataRow.insertCell(6);
+      removeCell.appendChild(removeButton);
+      
+      document.getElementById("products").appendChild(table);
+  } 
+}
+
+
+
+function makeCode(id,arr,first,selVal){
+    const arr1 = arr.map(function(opt){
+        if(opt==selVal)
+            return 'option selected>'+opt+'</option>';
+        else
+            return '<option>'+opt+'</option>';
+    });
+
+    let header = '<option disabled selected>'+first+'</option>';
+    
+    let s1 = '<select id=\''+id+'\'>'+header+arr1.join('')+'</select>';
+    return s1;
+}
+
+/*const Allorder = [
+{"CustomerName":"Jack	Smith","MobileNumber":"425361434","Location":"Sector	14","Deliveryslot":"12PM-2PM","value":72.6,"quantity":6,"items":[{"prodcode":"PEP122","productname":"Pepsi","price":12,"quantity":2,"discount":"10%","netamount":21.6},{"prodcode":"COK238","productname":"coke","price":15,"quantity":4,"discount":"15%","netamount":51}]},
+{"CustomerName":"Mary	Gomes","MobileNumber":"723476123","Location":"Sector	22","Deliveryslot":"4PM-6PM","value":130.60,"quantity":7,"items":[{"prodcode":"SUN677","productname":"sunsilk","price":48,"quantity":2,"discount":"15%","netamount":81.6},{"prodcode":"LUX831","productname":"lux","price":10,"quantity":4,"discount":"15%","netamount":34},{"prodcode":"DET810","productname":"dettol","price":15,"quantity":1,"discount":"None%","netamount":15}]},
+{"CustomerName":"Tim	May","MobileNumber":"835099614","Location":"Pioneer	Chowk","Deliveryslot":"Before	10AM","value":705,"quantity":9,"items":[{"prodcode":"GAR004","productname":"garnier","price":75,"quantity":6,"discount":"10%","netamount":405},{"prodcode":"RB0277","productname":"redbull","price":80,"quantity":3,"discount":"None","netamount":240}]},
+];
+
+Allorder.forEach(order => {
+  let totalQuantity = 0;
+  order.items.forEach(item => {
+    totalQuantity += item.quantity;
+  });
+  console.log(`Total quantity for customer ${order.CustomerName}: ${totalQuantity}`);
+});*/
+    </script>
+</body>
+</html>
